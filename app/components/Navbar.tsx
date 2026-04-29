@@ -11,7 +11,7 @@ export default function Navbar() {
     const onScroll = () => {
       setScrolled(window.scrollY > 10);
 
-      const sectionIds = ["hero", ...domains.map((d) => d.id), "quickref"];
+      const sectionIds = ["hero", "scenarios", ...domains.map((d) => d.id), "quickref"];
       for (let i = sectionIds.length - 1; i >= 0; i--) {
         const el = document.getElementById(sectionIds[i]);
         if (el && window.scrollY >= el.offsetTop - 100) {
@@ -37,7 +37,7 @@ export default function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center gap-1 h-14 overflow-x-auto scrollbar-hide">
+        <div className="flex items-center gap-1 h-14 overflow-x-auto no-scrollbar">
           {/* Logo */}
           <button
             onClick={() => scrollTo("hero")}
@@ -49,6 +49,19 @@ export default function Navbar() {
             <span className="text-sm font-semibold text-slate-300 group-hover:text-white transition-colors hidden sm:block whitespace-nowrap">
               Architect Exam
             </span>
+          </button>
+
+          {/* Scenarios link */}
+          <button
+            onClick={() => scrollTo("scenarios")}
+            className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${
+              active === "scenarios"
+                ? "bg-orange-500/20 text-orange-400 border border-orange-500/50"
+                : "text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+            }`}
+          >
+            <span className="text-orange-400">6</span>
+            Scenarios
           </button>
 
           <div className="h-5 w-px bg-slate-700 mx-2 flex-shrink-0" />

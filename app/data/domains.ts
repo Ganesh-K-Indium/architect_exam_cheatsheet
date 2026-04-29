@@ -1,5 +1,152 @@
 export type ColorKey = "purple" | "blue" | "emerald" | "amber" | "rose";
 
+export interface ModelInfo {
+  name: string;
+  id: string;
+  context: string;
+  maxOutput: string;
+  speed: string;
+  bestFor: string;
+  extendedThinking: boolean;
+  pricing: string;
+}
+
+export const models: ModelInfo[] = [
+  {
+    name: "Claude Opus 4.7",
+    id: "claude-opus-4-7",
+    context: "1M tokens",
+    maxOutput: "128k tokens",
+    speed: "Moderate",
+    bestFor: "Most complex reasoning, agentic coding — recommended with effort:'xhigh'",
+    extendedThinking: false,
+    pricing: "$5 in / $25 out per MTok",
+  },
+  {
+    name: "Claude Sonnet 4.6",
+    id: "claude-sonnet-4-6",
+    context: "1M tokens",
+    maxOutput: "64k tokens",
+    speed: "Fast",
+    bestFor: "Best speed + intelligence balance for most production agents",
+    extendedThinking: true,
+    pricing: "$3 in / $15 out per MTok",
+  },
+  {
+    name: "Claude Haiku 4.5",
+    id: "claude-haiku-4-5-20251001",
+    context: "200k tokens",
+    maxOutput: "64k tokens",
+    speed: "Fastest",
+    bestFor: "High-volume, latency-sensitive, near-frontier tasks",
+    extendedThinking: true,
+    pricing: "$1 in / $5 out per MTok",
+  },
+];
+
+export const examMeta = {
+  questions: 60,
+  duration: "120 minutes",
+  format: "Multiple choice (1 correct, 3 distractors)",
+  passing: "720 / 1000",
+  cost: "Free",
+  scenarios: "4 of 6 randomly selected — all questions anchor to these scenarios",
+  note: "You MUST know all 6 scenarios — any 4 could appear on your exam",
+};
+
+export interface Scenario {
+  number: number;
+  title: string;
+  description: string;
+  domainsHit: string[];
+  keySkills: string[];
+}
+
+export const scenarios: Scenario[] = [
+  {
+    number: 1,
+    title: "Customer Support Resolution Agent",
+    description:
+      "Build an AI agent that handles returns, billing disputes, and account issues with ≥80% first-contact resolution — and knows exactly when to escalate.",
+    domainsHit: ["D1: Agentic Arch", "D2: Tool Design", "D5: Context"],
+    keySkills: [
+      "Agentic loop with stop_reason",
+      "Structured error responses",
+      "Objective escalation triggers (not sentiment)",
+      "Case-facts block for preserving customer details",
+      "Hook-enforced refund caps",
+    ],
+  },
+  {
+    number: 2,
+    title: "Code Generation with Claude Code",
+    description:
+      "Configure Claude Code for a dev team: CLAUDE.md hierarchy, slash commands, skills, and plan mode effectiveness for a real codebase.",
+    domainsHit: ["D3: Claude Code", "D4: Prompt Eng"],
+    keySkills: [
+      "CLAUDE.md user/project/directory hierarchy",
+      "Commands vs skills (context:fork, allowed-tools)",
+      "Plan mode for multi-file refactors",
+      "TDD iterative refinement cycle",
+    ],
+  },
+  {
+    number: 3,
+    title: "Multi-Agent Research System",
+    description:
+      "Coordinator delegates to specialized subagents (search, analysis, synthesis, reporting). Tests orchestration, context isolation, and failure handling.",
+    domainsHit: ["D1: Agentic Arch", "D5: Context"],
+    keySkills: [
+      "Hub-and-spoke coordinator design",
+      "Context isolation — scoped context per subagent",
+      "Parallel Task calls for concurrent execution",
+      "Error propagation with structured context",
+      "Provenance tracking across subagents",
+    ],
+  },
+  {
+    number: 4,
+    title: "Developer Productivity with Claude",
+    description:
+      "Engineers navigating a large codebase using built-in tools and MCP servers. Tests tool selection, codebase exploration, and code generation.",
+    domainsHit: ["D2: Tool Design", "D3: Claude Code"],
+    keySkills: [
+      "Read/Edit/Write/Grep/Glob over Bash equivalents",
+      "WebSearch, WebFetch, ToolSearch built-in tools",
+      "MCP server configuration (.mcp.json)",
+      "4–5 tools per agent for optimal selection",
+    ],
+  },
+  {
+    number: 5,
+    title: "Claude Code for CI/CD",
+    description:
+      "Automated code reviews, test generation, and PR feedback using -p flag, structured output, and separate review sessions.",
+    domainsHit: ["D3: Claude Code", "D4: Prompt Eng"],
+    keySkills: [
+      "-p flag for non-interactive CI mode",
+      "--output-format json + --json-schema",
+      "Separate generator and reviewer sessions",
+      "Batch API for non-urgent jobs (50% savings)",
+      "Multi-pass review: local then cross-file",
+    ],
+  },
+  {
+    number: 6,
+    title: "Structured Data Extraction",
+    description:
+      "Process messy documents (invoices, receipts, contracts) using JSON schemas, validation-retry loops, and batch processing strategies.",
+    domainsHit: ["D4: Prompt Eng", "D5: Context"],
+    keySkills: [
+      "tool_use with forced tool_choice for schema compliance",
+      "Validate semantics after extraction (not just structure)",
+      "Retry with specific error messages, not generic ones",
+      "Per-document-type accuracy tracking (not just aggregate)",
+      "Few-shot: 2–4 examples with at least one edge case",
+    ],
+  },
+];
+
 export interface Comparison {
   label: string;
   wrong: string;
@@ -112,7 +259,7 @@ export const domains: Domain[] = [
   {
     id: "domain1",
     number: 1,
-    weight: "~25%",
+    weight: "~27%",
     title: "Agentic Architecture & Orchestration",
     shortTitle: "Agentic Arch",
     colorKey: "purple",
@@ -234,12 +381,49 @@ def refund_hook(tool, input, output):
         ],
         examTip: "If the task is unpredictable or has conditional branches, dynamic adaptive decomposition is correct. If it's a fixed linear pipeline, prompt chaining works.",
       },
+      {
+        code: "1.5",
+        title: "Agent SDK Parameters & Result Handling",
+        concepts: [
+          "effort: 'low' | 'medium' | 'high' | 'xhigh' | 'max' — controls reasoning depth per turn",
+          "effort ≠ extended thinking — they are independent features",
+          "max_turns: caps loop iterations; hit → ResultMessage.subtype = 'error_max_turns'",
+          "max_budget_usd: caps spend; hit → ResultMessage.subtype = 'error_max_budget_usd'",
+          "ResultMessage.subtype: 'success' | 'error_max_turns' | 'error_max_budget_usd' | 'error_during_execution'",
+          ".result field ONLY exists on subtype === 'success' — always check subtype first!",
+          "session_id in ResultMessage — save it to resume the session later",
+          "Permission modes: 'default' (prompt), 'acceptEdits' (auto-approve file ops), 'plan' (no execution), 'dontAsk' (deny uncovered), 'bypassPermissions' (CI/isolated only)",
+          "Read-only tools (Read, Glob, Grep) run concurrently; state-modifying tools (Edit, Bash) run sequentially",
+          "allowed_tools auto-approves listed tools; disallowed_tools blocks them regardless of other settings",
+        ],
+        antiPatterns: [
+          "Reading ResultMessage.result without first checking subtype === 'success' — error subtypes have no .result",
+          "Using bypassPermissions outside isolated/CI environments — dangerous on shared systems",
+          "Not setting max_turns or max_budget_usd in production — allows runaway sessions",
+          "Confusing effort level with extended thinking — they control different things",
+        ],
+        examTip: "ResultMessage.result only exists on success. Always check subtype first. For production agents, always set max_turns or max_budget_usd to prevent runaway loops. bypassPermissions is only safe in isolated containers/CI.",
+        comparison: {
+          label: "ResultMessage Handling",
+          wrong: `# WRONG: Assume success, read .result directly
+async for msg in query(prompt="..."):
+    if isinstance(msg, ResultMessage):
+        print(msg.result)  # Crashes on error!`,
+          right: `# CORRECT: Always check subtype first
+async for msg in query(prompt="..."):
+    if isinstance(msg, ResultMessage):
+        if msg.subtype == "success":
+            print(msg.result)
+        elif msg.subtype == "error_max_turns":
+            print(f"Resume: {msg.session_id}")`,
+        },
+      },
     ],
   },
   {
     id: "domain2",
     number: 2,
-    weight: "~20%",
+    weight: "~18%",
     title: "Tool Design & MCP Integration",
     shortTitle: "Tool Design",
     colorKey: "blue",
@@ -380,14 +564,64 @@ def refund_hook(tool, input, output):
           "Bash → run shell commands: tests, builds, installs, system tasks",
           "Grep → search for text PATTERNS inside files",
           "Glob → find FILES by name/path patterns",
-          "Prefer Read/Edit/Write/Grep/Glob — fall back to Bash only when needed",
+          "WebSearch → search the web for current information",
+          "WebFetch → fetch and parse content from a specific URL",
+          "ToolSearch → dynamically find and load tools on-demand (avoid preloading all MCP tools)",
+          "Agent (Task) → spawn subagents; AskUserQuestion → pause for human input; TodoWrite → track tasks",
+          "Prefer Read/Edit/Write/Grep/Glob — fall back to Bash only when no built-in fits",
         ],
         antiPatterns: [
           "Using Bash('cat file.txt') when Read exists",
           "Using Write to modify an existing file — it replaces the entire file",
-          "Using Bash find when Glob exists, or Bash grep when Grep exists",
+          "Using Bash find/grep when Glob/Grep exists",
+          "Preloading all MCP tools instead of using ToolSearch to load on-demand",
         ],
-        examTip: "The exam frequently presents Bash for file ops as an option. Correct answer always uses the purpose-built tool. Write = new files, Edit = existing files, Grep = content search, Glob = filename search.",
+        examTip: "The exam frequently presents Bash for file ops as an option. Correct answer always uses the purpose-built tool. Write = new files, Edit = existing files, Grep = content search, Glob = filename search. ToolSearch loads MCP tools on-demand to save context.",
+      },
+      {
+        code: "2.6",
+        title: "Prompt Caching",
+        concepts: [
+          "cache_control: {type: 'ephemeral'} marks where cache breakpoints are placed",
+          "Default TTL: 5 minutes; Extended TTL: 1 hour at 2× base cost",
+          "Cache READS cost only 0.1× base input price — ~90% savings on repeated prefixes",
+          "Cache WRITES cost 1.25× (5min) or 2× (1hr) base input price",
+          "Min tokens required: 4096 for Opus/Haiku, 1024–2048 for Sonnet (silent failure below)",
+          "Cache hierarchy: tools → system → messages (changes cascade DOWN)",
+          "Place breakpoint on LAST stable block — never on timestamps or per-request content",
+          "Up to 4 explicit cache breakpoints per request",
+          "Workspace-level isolation since Feb 2026 — workspaces within same org have separate caches",
+          "Verify hits: usage.cache_read_input_tokens > 0 and cache_creation_input_tokens > 0",
+          "CLAUDE.md and tool definitions are auto-cached by the Agent SDK on every turn",
+        ],
+        antiPatterns: [
+          "Placing cache_control on dynamic content (timestamps, user IDs) — cache never hits",
+          "Changing tool definitions frequently — invalidates ALL downstream cache (system + messages)",
+          "Not checking cache_read_input_tokens in usage to verify caching actually works",
+          "Using workspace caches expecting org-level sharing (isolated since Feb 5, 2026)",
+        ],
+        examTip: "Cache invalidation cascades: tool definition change → all cache gone. System change → messages cache gone. Always put the breakpoint on the LAST identical/stable block. Check cache_read_input_tokens > 0 to confirm hits.",
+        comparison: {
+          label: "Cache Breakpoint Placement",
+          wrong: `# WRONG: Breakpoint on changing content
+messages=[{
+    "role": "user",
+    "content": f"Time: {now()} | Question: {q}",
+    "cache_control": {"type": "ephemeral"}
+    # Different every request → zero cache hits
+}]`,
+          right: `# CORRECT: Breakpoint on stable prefix
+system=[{
+    "type": "text",
+    "text": "You are a support agent...",  # Stable
+    "cache_control": {"type": "ephemeral"}
+}]
+messages=[{
+    "role": "user",
+    "content": f"Time: {now()} | Question: {q}"
+    # Dynamic content AFTER the cache breakpoint
+}]`,
+        },
       },
     ],
   },
@@ -782,17 +1016,22 @@ final = resolve_by_confidence([rev_db, rev_pdf])`,
 export const quickRefList: { rule: string; avoid: string }[] = [
   { rule: "stop_reason → loop control", avoid: "text parsing" },
   { rule: "hooks → business rule enforcement", avoid: "prompt instructions" },
-  { rule: "specific tool descriptions", avoid: "vague descriptions" },
-  { rule: "structured errors (isError, errorCategory)", avoid: "generic errors / silent []" },
+  { rule: "specific tool descriptions with examples & edge cases", avoid: "vague descriptions" },
+  { rule: "structured errors (isError, errorCategory, isRetryable)", avoid: "generic errors / silent []" },
   { rule: "4–5 tools per agent", avoid: "18+ tools in one agent" },
   { rule: "user/project/directory CLAUDE.md hierarchy", avoid: "one massive config file" },
   { rule: "skills with context:fork for isolation", avoid: "commands for complex tasks" },
   { rule: "plan mode for complex multi-file tasks", avoid: "direct execution for big refactors" },
-  { rule: "tool_use = structure (not truth) + validate", avoid: "assuming tool_use = correctness" },
+  { rule: "tool_use = structure (not truth) + validate semantics", avoid: "assuming tool_use = correctness" },
   { rule: "case-facts blocks for critical details", avoid: "progressive summarization" },
-  { rule: "objective escalation triggers", avoid: "sentiment or confidence-based escalation" },
+  { rule: "objective escalation triggers (request, policy gap, threshold)", avoid: "sentiment or confidence escalation" },
   { rule: "separate review session (fresh context)", avoid: "same-session self-review" },
   { rule: "per-document-type stratified metrics", avoid: "aggregate-only accuracy" },
-  { rule: "provenance tracking (source + confidence)", avoid: "arbitrary conflict resolution" },
+  { rule: "provenance tracking (source + confidence + timestamp)", avoid: "arbitrary conflict resolution" },
   { rule: "${ENV_VAR} in MCP config for secrets", avoid: "hardcoded API keys" },
+  { rule: "check ResultMessage.subtype === 'success' before reading .result", avoid: "assuming agent always succeeds" },
+  { rule: "cache breakpoint on LAST stable block", avoid: "cache_control on dynamic/changing content" },
+  { rule: "max_turns + max_budget_usd in production agents", avoid: "no limits → runaway sessions" },
+  { rule: "access failure → isError:true (search not performed)", avoid: "returning [] when DB unreachable" },
+  { rule: "retry with SPECIFIC validation errors", avoid: "generic 'there were errors, try again'" },
 ];
