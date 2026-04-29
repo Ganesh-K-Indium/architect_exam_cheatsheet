@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Claude Certified Architect — Exam Cheat Sheet
 
-## Getting Started
+A free, open cheat sheet web app for anyone preparing for the **Claude Certified Architect (Foundations)** exam by Anthropic.
 
-First, run the development server:
+---
+
+## A note from me
+
+I built this because I was studying for the exam myself and couldn't find everything in one place. The official docs are great, but when you're in revision mode you just want the key points, the anti-patterns, and the exam tips — fast.
+
+So I put it all together. All 5 domains, all 6 exam scenarios, prompt caching, the Agent SDK parameters, model reference, the quick-ref pairs — everything I wished I had in one scroll.
+
+If it helps even one person pass, that's enough for me. Good luck.
+
+---
+
+## What's inside
+
+- **6 Exam Scenarios** — every question on the exam anchors to one of these, so they come first
+- **5 Domain deep-dives** — key concepts, anti-patterns, wrong vs. right code comparisons, and exam tips for every subsection
+- **Prompt Caching** — cache_control, TTL, invalidation rules, cost multipliers
+- **Agent SDK reference** — effort levels, ResultMessage subtypes, permission modes
+- **Models reference** — Opus / Sonnet / Haiku with context windows and pricing
+- **Quick Ref** — 20 do/don't pairs to read the night before the exam
+
+## Exam at a glance
+
+| | |
+|---|---|
+| Questions | 60 |
+| Duration | 120 minutes |
+| Format | Multiple choice |
+| Pass score | 720 / 1000 |
+| Cost | Free |
+| Scenarios | 4 of 6 randomly selected |
+
+## Run it locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Next.js · Tailwind CSS · TypeScript
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+*Not affiliated with Anthropic. Built as a personal study tool and shared freely.*
