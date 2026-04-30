@@ -45,7 +45,7 @@ export default function Navbar() {
             CA
           </div>
           <span className="hidden lg:block text-sm font-semibold text-slate-300 group-hover:text-white transition-colors whitespace-nowrap">
-            Architect Exam
+            CrackTheClaude
           </span>
         </button>
 
