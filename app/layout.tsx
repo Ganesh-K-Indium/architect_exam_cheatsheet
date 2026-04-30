@@ -86,6 +86,11 @@ export const metadata: Metadata = {
   // App metadata
   applicationName: "CrackTheClaude",
   category: "education",
+
+  // Google Search Console verification
+  verification: {
+    google: "dyFxOxTf4akzmbLmRDctaCl7IlmI5o_W-EeREBPF5IA",
+  },
 };
 
 // JSON-LD structured data
