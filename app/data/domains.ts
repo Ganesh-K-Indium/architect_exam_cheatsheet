@@ -300,22 +300,25 @@ while True:
       },
       {
         code: "1.2",
-        title: "Multi-Agent Orchestration",
+        title: "Hub-and-Spoke Multi-Agent Orchestration",
         concepts: [
-          "Hub-and-spoke: one coordinator delegates to specialized subagents",
-          "Subagents have isolated context — they only get what's relevant to their task",
+          "Hub-and-spoke ARCHITECTURE: one coordinator + specialized subagents — all comms flow through hub",
+          "Coordinator responsibilities: decompose tasks, select subagents, delegate via Task, aggregate results, handle errors",
+          "Subagents have ISOLATED context — they don't inherit coordinator history; all needed context must be explicitly passed",
           "allowedTools on the coordinator MUST include 'Task' to spawn subagents",
-          "Multiple Task calls in a single response execute in parallel",
-          "fork_session creates a branched session for exploration without polluting main context",
-          "Sweet spot: 4–5 tools per agent — more than that degrades selection quality",
-          "Pass ONLY task-specific context to each subagent — never dump full coordinator history",
+          "Multiple Task calls in a single response execute in PARALLEL",
+          "fork_session branches exploration without polluting main coordinator context",
+          "Sweet spot: 4–5 tools per agent — more degrades selection quality",
+          "NO direct subagent-to-subagent communication — bypasses coordinator, loses visibility and error control",
+          "Only the subagent's FINAL response returns to coordinator — not its full transcript",
         ],
         antiPatterns: [
-          "Sharing the full coordinator conversation history with every subagent (context pollution)",
-          "Giving one agent 18+ tools instead of distributing across specialized subagents",
-          "Not providing explicit, task-scoped context when delegating to subagents",
+          "Direct subagent-to-subagent communication — bypasses coordinator, loses error handling and context routing",
+          "Sharing full coordinator conversation history with subagents (context pollution)",
+          "Overly narrow decomposition — splitting 'creative industries' as only 'art, design, photo' misses music and literature",
+          "Aborting entire workflow when one subagent fails — continue with partial data and annotate gaps instead",
         ],
-        examTip: "Context isolation is heavily tested. If an answer shares full coordinator context with subagents, it's wrong. Each subagent receives only context specific to its assigned subtask.",
+        examTip: "Hub-and-spoke is the ARCHITECTURE. All comms flow through the coordinator — never peer-to-peer between subagents. Questions about missing coverage usually point to overly narrow task decomposition, not tool problems.",
         comparison: {
           label: "Context Passing",
           wrong: `# WRONG: Full history to every subagent
@@ -416,6 +419,48 @@ async for msg in query(prompt="..."):
             print(msg.result)
         elif msg.subtype == "error_max_turns":
             print(f"Resume: {msg.session_id}")`,
+        },
+      },
+      {
+        code: "1.6",
+        title: "Dynamic Adaptive Decomposition & Adaptive Investigation Plan",
+        concepts: [
+          "Dynamic Adaptive Decomposition: subtasks are GENERATED based on intermediate results — not pre-planned",
+          "The agent asks 'what are the needed next steps?' at runtime, after seeing each discovery",
+          "Adaptive Investigation Plan: a specific application — map domain → identify gaps → prioritize by risk → adapt as dependencies emerge",
+          "Use DYNAMIC decomposition when: scope is unknown upfront, task is investigative, branches depend on findings",
+          "Use PROMPT CHAINING when: steps are fixed and predictable, each input/output is known in advance",
+          "Dynamic decomposition lives INSIDE hub-and-spoke — the coordinator decides tasks dynamically",
+          "Example pattern: 'Analyze codebase. For each issue: assess severity → if simple fix directly → if complex plan first → run tests → adapt'",
+          "Partial results are valid — if one subagent fails, continue with others and annotate the gap",
+        ],
+        antiPatterns: [
+          "Using a static prompt chain for an investigative task — rigid sequences fail when findings are unexpected",
+          "Pre-defining all subtasks upfront for open-ended research — misses emergent scope",
+          "Overly narrow decomposition — e.g. 'creative industries' → only 'art, design, photo' (missing music, literature, film)",
+          "Aborting the full workflow when one branch fails — should collect partial results and annotate missing pieces",
+        ],
+        examTip: "The exam distinguishes these three clearly: Hub-and-Spoke = the ARCHITECTURE. Dynamic Adaptive = the DECOMPOSITION STRATEGY for unknown/investigative tasks. Adaptive Investigation Plan = dynamic decomposition applied to research. If the scenario involves unknown scope or emergent findings, dynamic adaptive is always correct over prompt chaining.",
+        comparison: {
+          label: "Prompt Chaining vs Dynamic Adaptive Decomposition",
+          wrong: `# WRONG for investigative tasks: rigid chain
+steps = [
+    "Step 1: Read all files",
+    "Step 2: List all bugs",
+    "Step 3: Fix each bug",
+]
+# What if Step 2 finds none? Or finds 200?
+# Static chain cannot adapt to findings`,
+          right: `# CORRECT: Dynamic adaptive — adapts to results
+agent.run("""
+Investigate the codebase for issues.
+For each finding:
+  - Assess severity and complexity
+  - If simple: fix directly, run tests
+  - If complex: plan first, then fix
+  - If blocked by dependency: flag and continue
+Adapt your approach based on what you find.
+""")`,
         },
       },
     ],
@@ -1034,4 +1079,7 @@ export const quickRefList: { rule: string; avoid: string }[] = [
   { rule: "max_turns + max_budget_usd in production agents", avoid: "no limits → runaway sessions" },
   { rule: "access failure → isError:true (search not performed)", avoid: "returning [] when DB unreachable" },
   { rule: "retry with SPECIFIC validation errors", avoid: "generic 'there were errors, try again'" },
+  { rule: "dynamic adaptive decomposition for unknown/investigative scope", avoid: "static prompt chain for open-ended tasks" },
+  { rule: "all comms via coordinator (hub-and-spoke)", avoid: "direct subagent-to-subagent communication" },
+  { rule: "continue with partial results when one subagent fails", avoid: "aborting whole workflow on single failure" },
 ];

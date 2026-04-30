@@ -1,4 +1,5 @@
 import { scenarios, examMeta } from "@/app/data/domains";
+import ConceptText from "@/app/components/ConceptText";
 
 const scenarioColors = [
   { border: "border-purple-500/40", bg: "bg-purple-500/5", badge: "bg-purple-600", text: "text-purple-300", dot: "bg-purple-500" },
@@ -96,8 +97,10 @@ export default function ScenariosSection() {
                 <ul className="space-y-1.5">
                   {scenario.keySkills.map((skill, j) => (
                     <li key={j} className="flex items-start gap-2">
-                      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 mt-1.5 ${colors.dot}`} />
-                      <span className="text-xs text-slate-300 leading-relaxed">{skill}</span>
+                      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 mt-[7px] ${colors.dot}`} />
+                      <span className="text-xs text-slate-300 leading-relaxed">
+                        <ConceptText text={skill} />
+                      </span>
                     </li>
                   ))}
                 </ul>
